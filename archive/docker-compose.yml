@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  wp_dev_db:
+    image: mysql:5.7
+    restart: always
+    environment:
+      MYSQL_DATABASE: wpDB
+      MYSQL_USER: wpUser
+      MYSQL_PASSWORD: wpPass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - wp_db_volume:/var/lib/mysql
+    
+  phpmyadmin:
+    depends_on:
+      - wp_dev_db
+    image: phpmyadmin/phpmyadmin
+    restart: always
+    ports:
+      - '8686:80'
+    environment:
+        PMA_HOST: wp_dev_db
+        MYSQL_USER: wpUser
+        MYSQL_PASS: wpPass
+        MYSQL_RANDOM_ROOT_PASSWORD: '1'
+        
+  wordpress-dev:
+    image: wordpress:latest
+    restart: always
+    ports:
+      - 8585:80
+    environment:
+      WORDPRESS_DEBUG: 1
+      WORDPRESS_DB_HOST: wp_dev_db
+      WORDPRESS_DB_USER: wpUser
+      WORDPRESS_DB_PASSWORD: wpPass
+      WORDPRESS_DB_NAME: wpDB
+
+    volumes:
+      - ./:/var/www/html
+
+  composer:
+    image: composer:latest
+    command: ["composer","update"]
+    volumes:
+      - ./:/app
+
+volumes:
+  wp_db_volume:
+
+networks:
+  default:
+    external:
+      name: wordpress-dev-network
