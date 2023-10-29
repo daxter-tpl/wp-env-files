@@ -1,0 +1,8 @@
+{
+    "plugins": ["."],
+    "themes": ["https://downloads.wordpress.org/theme/generatepress.3.3.1.zip"],
+    "port": 8888,
+    "config": {
+        "WP_DEBUG_DISPLAY": true
+    }
+}
